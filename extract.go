@@ -21,7 +21,6 @@ type ExtractResult struct {
 }
 
 func renderStr(n *html.Node) string {
-	// Extracts and trims the title content from an HTML node
 	var buf bytes.Buffer
 	w := io.Writer(&buf)
 	html.Render(w, n)
@@ -38,7 +37,7 @@ func extract(inCh chan string, dOutCh chan DownloadResult, exOutCh chan ExtractR
 		io_reader := bytes.NewReader(downloadResult.body)
 		doc, err := html.Parse(io_reader)
 		if err != nil {
-			fmt.Printf("error parsing html data: %v\n", err.Error())
+			fmt.Printf("error parsing HTML data: %v\n", err.Error())
 			return
 		}
 
@@ -47,7 +46,7 @@ func extract(inCh chan string, dOutCh chan DownloadResult, exOutCh chan ExtractR
 		imagesWCaptions := make(map[string][]string)
 		var titleExtracted string
 
-		// Abtain map of stop words, calling func stopWords()
+		// Obtain map of stop words, calling func stopWords()
 		mapStopWords := stopWords()
 
 		// Closure function to extract words and hrefs
@@ -136,7 +135,7 @@ func extract(inCh chan string, dOutCh chan DownloadResult, exOutCh chan ExtractR
 				f(c)
 			}
 		}
-		// Call function on html information
+		// Call function on body
 		f(doc)
 
 		postStopStemSlice := []string{}

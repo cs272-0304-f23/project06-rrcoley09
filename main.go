@@ -6,8 +6,9 @@ import (
 )
 
 func main() {
-	//url := "https://www.ucsc.edu/wp-sitemap.xml"
-	url := "https://www.npr.org/live-updates/sitemap.xml"
+
+	url := "https://www.ucsc.edu/wp-sitemap.xml"
+	//url := "https://www.npr.org/live-updates/sitemap.xml"
 
 	var (
 		siteMap = flag.Bool("sitemap", false, "Determines if input is sitemap")

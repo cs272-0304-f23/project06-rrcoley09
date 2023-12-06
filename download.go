@@ -21,10 +21,13 @@ func checkDisallow(url string) (bool, AgentRules) {
 	record := get_robots(url)
 
 	for agent, agentRules := range record.userAgent {
+		// Replace "*" in the agent pattern with ".*" for regex matching
 		agentPattern := strings.ReplaceAll(agent, "*", ".*")
+		// Check if the default user agent matches the agent pattern
 		checkAgent, _ := regexp.Match(agentPattern, []byte(defaultUserAgent))
 		if checkAgent {
 			for val := range agentRules.disallow {
+				// Check if the url matches any disallow pattern
 				match, _ := regexp.MatchString(val, url)
 				if match {
 					return true, agentRules
@@ -36,23 +39,26 @@ func checkDisallow(url string) (bool, AgentRules) {
 }
 
 func download(inC chan string, dOutCh chan DownloadResult, wg *sync.WaitGroup, n *int32, siteMap bool) {
-	// Loop over urls in inC
+	// Loop over URLs in inC
 	for url := range inC {
+		// Check if the url is disallowed and get the agent rules
 		match, record := checkDisallow(url)
 
+		// Sleep for crawl delay if specified in agent rules
 		if record.crawlDelay > 0 {
 			time.Sleep(time.Duration(record.crawlDelay) * time.Second)
 		}
 
+		// Proceed with the download if not disallowed
 		if !match {
 			resp, err := http.Get(url)
 			if err == nil {
-				// Ensure resp of http request is closed
+				// Ensure the response of HTTP request is closed
 				defer resp.Body.Close()
 
-				// Check success status of request
+				// Check the success status of the request
 				if resp.StatusCode == 200 {
-					// Reads from io.Reader and returns info as slice of bytes and error
+					// Reads from io.Reader and returns info as a slice of bytes and error
 					body, err := io.ReadAll(resp.Body)
 					if err == nil {
 						// Return download result to dOutCh for use in extract
@@ -61,6 +67,7 @@ func download(inC chan string, dOutCh chan DownloadResult, wg *sync.WaitGroup, n
 				}
 			}
 		} else {
+			// Decrement the counter and signal the wait group
 			atomic.AddInt32(n, -1)
 			wg.Done()
 		}

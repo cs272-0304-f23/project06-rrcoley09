@@ -9,11 +9,16 @@ import (
 	"sync/atomic"
 )
 
-func insertSnippet(tx *sql.Tx, word string, res ExtractResult) int {
+func insertSnippet(tx *sql.Tx, word string, word2 string, res ExtractResult) int {
 	var snippetID int
+	var bigram bool
+	if word2 != "" {
+		bigram = true
+		word = word + " " + word2
+	}
+
 	for _, sentence := range res.sentences {
 		if strings.Contains(sentence, word) {
-			//fmt.Printf("sentence: %v word: %v\n", sentence, word)
 
 			result, err := tx.Exec(`INSERT OR IGNORE INTO snippets (sentence) VALUES(?);`, sentence)
 
@@ -28,34 +33,18 @@ func insertSnippet(tx *sql.Tx, word string, res ExtractResult) int {
 				snippetID = int(lastInsertID)
 			}
 
-			break
-		}
-	}
-	return snippetID
-}
-
-func insertSnippetBigram(tx *sql.Tx, word string, word2 string, res ExtractResult, index int) int {
-	var snippetID int
-	concatWord := word + " " + word2
-	for _, sentence := range res.sentences {
-		if index+1 < len(res.words) {
-			fmt.Println(concatWord)
-			if strings.Contains(sentence, concatWord) {
-				result, err := tx.Exec(`INSERT OR IGNORE INTO snippets (sentence) VALUES(?);`, sentence)
-
+			if snippetID == 0 && bigram {
+				err = tx.QueryRow(`SELECT snippet_id from snippets where sentence like ? limit 1;`, "%"+word+"%").Scan(&snippetID)
 				if err != nil {
-					fmt.Printf("error adding to snippets: %v\n", err)
-					break
+					if err != sql.ErrNoRows {
+						fmt.Println("could not find snippet in table")
+					}
 				}
 
-				rowsAffected, _ := result.RowsAffected()
-				if rowsAffected > 0 {
-					lastInsertID, _ := result.LastInsertId()
-					snippetID = int(lastInsertID)
-				}
-
-				break
+				//fmt.Printf("word: %v sentence: %v word: %v id: %v\n", word, sentence, word, snippetID)
 			}
+
+			break
 		}
 	}
 	return snippetID
@@ -77,7 +66,6 @@ func add_to_table(res ExtractResult, db *sql.DB) {
 	}
 	// Retrieve the last inserted url_id
 	urlID, err := result.LastInsertId()
-	fmt.Printf("url_id : %v\n", urlID)
 	if err != nil {
 		fmt.Println("could not find URL in urls table")
 	}
@@ -100,13 +88,13 @@ func add_to_table(res ExtractResult, db *sql.DB) {
 		}
 		mapWordIDs[word] = int64(termID)
 
-		snippetID := insertSnippet(tx, word, res)
+		snippetID := insertSnippet(tx, word, "", res)
 
 		var hitID int
 		err = tx.QueryRow(`SELECT hit_id from hits where term_id = ? and url_id = ?;`, termID, urlID).Scan(&hitID)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				fmt.Printf("termID: %d, urlID: %d, snippetID: %d\n", termID, urlID, snippetID)
+				//fmt.Printf("termID: %d, urlID: %d, snippetID: %d\n", termID, urlID, snippetID)
 				if snippetID != 0 {
 					_, err = tx.Exec(`INSERT OR IGNORE INTO hits (term_id, url_id, term_count, snippet_id) VALUES(?, ?, 1, ?);`, termID, urlID, snippetID)
 					//fmt.Println(snippetID)
@@ -147,18 +135,26 @@ func add_to_table(res ExtractResult, db *sql.DB) {
 			word2 := res.words[index+1]
 			termID2 := mapWordIDs[word2]
 
-			snippetID := insertSnippetBigram(tx, word, word2, res, index)
+			snippetID := insertSnippet(tx, word, word2, res)
+			//fmt.Printf("bigram: %v\n", snippetID)
 
 			var bigramID int
 			err = tx.QueryRow(`SELECT bigram_id from bigrams where term_id_1 = ? and term_id_2 = ? and url_id = ?;`, termID, termID2, urlID).Scan(&bigramID)
-
 			if err != nil {
 				if err == sql.ErrNoRows {
-					// If no rows are found, insert a new row into the "hits" table
-					_, err = tx.Exec(`INSERT INTO bigrams (term_id_1, term_id_2, url_id, term_count) VALUES(?, ?, ?, 1);`, termID, termID2, urlID)
+					if snippetID != 0 {
+						// If no rows are found, insert a new row into the "hits" table
+						_, err = tx.Exec(`INSERT INTO bigrams (term_id_1, term_id_2, url_id, term_count, snippet_id) VALUES(?, ?, ?, 1, ?);`, termID, termID2, urlID, snippetID)
 
-					if err != nil {
-						fmt.Println("error inserting new freq count in bigrams table")
+						if err != nil {
+							fmt.Println("error inserting new freq count in bigrams table with snippet")
+						}
+					} else {
+						_, err = tx.Exec(`INSERT INTO bigrams (term_id_1, term_id_2, url_id, term_count) VALUES(?, ?, ?, 1);`, termID, termID2, urlID)
+
+						if err != nil {
+							fmt.Println("error inserting new freq count in bigrams table without snippet")
+						}
 					}
 				} else {
 					fmt.Printf("error getting bigram_id from bigrams table: %v\n", err)
@@ -211,15 +207,12 @@ func populate_tables(exOutCh chan ExtractResult, wg *sync.WaitGroup, n *int32, p
 
 	// Loop over results from extract for each url
 	for extractResult := range exOutCh {
-		//if !pastDB {
 		// Add extracted result to the database
 		add_to_table(extractResult, db)
 
 		// Decrements wait group counter by 1
 		atomic.AddInt32(n, -1)
 		wg.Done()
-		//}
-
 	}
 	db.Close()
 }
