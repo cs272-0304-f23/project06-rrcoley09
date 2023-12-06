@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+	//exit := make(chan os.Signal, 1)
+	//signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 
 	url := "https://www.ucsc.edu/wp-sitemap.xml"
 	//url := "https://www.npr.org/live-updates/sitemap.xml"
@@ -23,6 +25,7 @@ func main() {
 	} else {
 		crawl(url, false, *pastDB)
 	}
+	//<-exit
 
 	for {
 		time.Sleep(100 * time.Millisecond)

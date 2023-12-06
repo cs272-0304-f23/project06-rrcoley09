@@ -6,7 +6,7 @@ import (
 	"github.com/kljensen/snowball"
 )
 
-func search(terms []string, wildCard bool) []Hits {
+func search(terms []string, wildCard bool, imageSearch bool) []Hits {
 	// Stem the search term
 	stemmedSearch := []string{}
 
@@ -19,5 +19,5 @@ func search(terms []string, wildCard bool) []Hits {
 	}
 
 	// If stemming is successful, perform tf-idf search with the stemmmed term and wildcard flag
-	return tfIdf(stemmedSearch, wildCard)
+	return tfIdf(stemmedSearch, wildCard, imageSearch)
 }

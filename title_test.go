@@ -5,45 +5,44 @@ import (
 	"testing"
 )
 
-func TestNGram(t *testing.T) {
+func TestImageSearch(t *testing.T) {
 	tests := []struct {
 		term string
 		want []Hits
 	}{
-		{"uc santa",
+		{"santa",
 			[]Hits{
-				{"https://www.ucsc.edu/about/", "About UC Santa Cruz – UC Santa Cruz", 0.02896769662921348},
-				{"https://www.ucsc.edu/about/overview/", "Overview – UC Santa Cruz", 0.026902173913043476},
-				{"https://www.ucsc.edu/programs-and-units/", "Programs and Units – UC Santa Cruz", 0.026258680555555552},
-				{"https://www.ucsc.edu/campus/", "Campus & Community – UC Santa Cruz", 0.02449524940617577},
-				{"https://www.ucsc.edu/research/", "Research – UC Santa Cruz", 0.023174157303370788},
-				{"https://www.ucsc.edu/campus/mascot/", "Our Mascot: Sammy the Banana Slug – UC Santa Cruz", 0.022664835164835168},
-				{"https://www.ucsc.edu/better-together/", "UC + Santa Cruz. Better together – UC Santa Cruz", 0.02142857142857143},
-				{"https://www.ucsc.edu/", "UC Santa Cruz – A world-class public research institution comprised of ten residential college communities nestled in the redwood forests and meadows overlooking central California's Monterey Bay.", 0.0207286432160804},
-				{"https://www.ucsc.edu/land-acknowledgment/", "Land Acknowledgment – UC Santa Cruz", 0.019908301158301157},
-				{"https://www.ucsc.edu/principles-community/", "Principles of Community – UC Santa Cruz", 0.01939655172413793},
-				{"https://www.ucsc.edu/admissions/", "Admissions & Aid – UC Santa Cruz", 0.018284574468085107},
-				{"https://www.ucsc.edu/campus/visit/", "Visit UCSC – UC Santa Cruz", 0.01657958199356913},
-				{"https://www.ucsc.edu/about/achievements-facts-and-figures/", "Achievements, Facts, and Figures – UC Santa Cruz", 0.015345982142857142},
-				{"https://www.ucsc.edu/mission-and-vision/", "Mission and Vision – UC Santa Cruz", 0.015054744525547444},
-				{"https://www.ucsc.edu/residential-colleges/", "Residential Colleges – UC Santa Cruz", 0.014732142857142857},
-				{"https://www.ucsc.edu/campus-destinations/", "Campus Destinations – UC Santa Cruz", 0.013323643410852713},
-				{"https://www.ucsc.edu/people/", "Find people – UC Santa Cruz", 0.012890625000000001},
-				{"https://www.ucsc.edu/about/leadership/", "Leading the change – UC Santa Cruz", 0.011752136752136752},
-				{"https://www.ucsc.edu/research/undergraduate-research/", "Undergraduate Research – UC Santa Cruz", 0.010522959183673469},
-				{"https://www.ucsc.edu/feedback/", "Feedback – UC Santa Cruz", 0.0103125},
-				{"https://www.ucsc.edu/search/", "Search results – UC Santa Cruz", 0.0103125},
-				{"https://www.ucsc.edu/author/milpowelucsc-edu/", "Miranda Powell – UC Santa Cruz", 0.01021039603960396},
-				{"https://www.ucsc.edu/author/raknightucsc-edu/", "raknight@ucsc.edu – UC Santa Cruz", 0.01021039603960396},
-				{"https://www.ucsc.edu/author/lmnielseucsc-edu/", "Lisa Nielsen – UC Santa Cruz", 0.01021039603960396},
-				{"https://www.ucsc.edu/author/gwenjucsc-edu/", "Gwen Jourdonnais – UC Santa Cruz", 0.01021039603960396},
-				{"https://www.ucsc.edu/campus/campus-galleries-and-theaters/", "Campus Galleries and Theaters – UC Santa Cruz", 0.009915865384615386},
-				{"https://www.ucsc.edu/campus/visit/maps-directions/", "Campus maps and directions – UC Santa Cruz", 0.008152173913043478},
-				{"https://www.ucsc.edu/calendars/", "Calendars – UC Santa Cruz", 0.0074190647482014396},
-				{"https://www.ucsc.edu/academics/", "Academics – UC Santa Cruz", 0.004209183673469388},
-				{"https://www.ucsc.edu/address-and-phone/", "Address and phone – UC Santa Cruz", 0.003763686131386861},
-				{"https://www.ucsc.edu/azindex/", "A–Z index – UC Santa Cruz", 0.003020650263620387},
-				{"https://www.ucsc.edu/privacy-policy/", "Privacy Policy – UC Santa Cruz", 0.0027871621621621623},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/05/4-19-23-Merrill-Spring-CL-002-1024x683.jpg", "", "https://www.ucsc.edu/about/", 0.002084088437839797},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2022/10/you-are-loved-1024x682.jpg", "", "https://www.ucsc.edu/about/", 0.002084088437839797},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2022/10/bridge-1024x768.jpg", "", "https://www.ucsc.edu/about/", 0.002084088437839797},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/05/Norcalmap.png", "", "https://www.ucsc.edu/about/", 0.004168176875679594},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2022/11/employment-1024x682.jpg", "", "https://www.ucsc.edu/about/", 0.004168176875679594},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2022/11/research-impact-1024x682.jpg", "", "https://www.ucsc.edu/about/", 0.004168176875679594},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/chancellor-edited-1024x577.jpg", "", "https://www.ucsc.edu/about/", 0.002084088437839797},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2022/11/sammy-move-in-1-1024x683.jpg", "", "https://www.ucsc.edu/about/", 0.002084088437839797},
+				{"About UC Santa Cruz – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/monument-sign_ln-1024x768.jpg", "", "https://www.ucsc.edu/about/", 0.002084088437839797},
+				{"Campus & Community – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/20171014-203857.jpg", "", "https://www.ucsc.edu/campus/", 0.0017623170638265268},
+				{"Campus & Community – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/5-6-22-John-R-Lewis-CL-008.jpg", "", "https://www.ucsc.edu/campus/", 0.0035246341276530535},
+				{"Our Mascot: Sammy the Banana Slug – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2022/12/Sammy-City-Hall-3-1-of-1-1024x772.jpg", "", "https://www.ucsc.edu/campus/mascot/", 0.00271771239513175},
+				{"Overview – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/20220713-082437.jpg", "", "https://www.ucsc.edu/about/overview/", 0.002150537634408602},
+				{"Overview – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/20220302-041553.jpg", "", "https://www.ucsc.edu/about/overview/", 0.002150537634408602},
+				{"Overview – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/ucsc12_day1-63.jpg", "", "https://www.ucsc.edu/about/overview/", 0.002150537634408602},
+				{"Overview – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/06/SAMMY-SILICON-VALLEY_RGB_300dpi-1024x1024.png", "", "https://www.ucsc.edu/about/overview/", 0.002150537634408602},
+				{"Overview – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/IMG_3723.jpg", "", "https://www.ucsc.edu/about/overview/", 0.002150537634408602},
+				{"Overview – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/06/6-10-23-Black-Grad-CL-029_SQR-1024x1024.jpg", "", "https://www.ucsc.edu/about/overview/", 0.002150537634408602},
+				{"Visit UCSC – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/20171014-203857.jpg", "", "https://www.ucsc.edu/campus/visit/", 0.002385644642671922},
+				{"Visit UCSC – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/07/5-6-22-John-R-Lewis-CL-008.jpg", "", "https://www.ucsc.edu/campus/visit/", 0.004771289285343844},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/cc-1-resize.jpg", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/ias-stage-photo.jpg", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/lick-lh-540.jpg", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/resources-icon.png", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/12-07-19-SCParade-CL-1-1.jpg", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/20220531-Aerial-Kresge-Construction-NEG-22-2-1024x682.jpg", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/water-icon.png", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/economy-icon.png", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/transportation-icon.png", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/house-icon.png", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
+				{"UC + Santa Cruz. Better together – UC Santa Cruz", "https://www.ucsc.edu/wp-content/uploads/2023/08/health-icon.png", "", "https://www.ucsc.edu/better-together/", 0.0009635525764558023},
 			},
 		},
 	}
@@ -54,35 +53,25 @@ func TestNGram(t *testing.T) {
 	crawl(url, true, false)
 
 	for _, tc := range tests {
-		terms := []string{"uc", "santa"}
-		got := search(terms, false)
+		term := "santa"
+		got := search_image(term)
 
-		for _, gotHit := range got {
-			//fmt.Println(gotHit)
-			for _, wantHit := range tc.want {
-				if gotHit.url == wantHit.url {
-					if !reflect.DeepEqual(gotHit.title, wantHit.title) {
-						t.Errorf("Want title: %v\nGot title: %v\n", wantHit.title, gotHit.title)
-					}
-				}
-			}
+		if !reflect.DeepEqual(len(got), len(tc.want)) {
+			t.Errorf("Want length: %v\nGot length: %v\n", len(tc.want), len(got))
 		}
+
 	}
 }
 
-func TestWildCard(t *testing.T) {
+func TestSnippet(t *testing.T) {
 	tests := []struct {
 		term string
 		want []Hits
 	}{
-		{"farm",
+		{"thrive",
 			[]Hits{
-				{"https://www.ucsc.edu/campus-destinations/", "Campus Destinations – UC Santa Cruz", 0.036544850498338874},
-				{"https://www.ucsc.edu/campus/visit/", "Visit UCSC – UC Santa Cruz", 0.01515847496554892},
-				{"https://www.ucsc.edu/about/overview/", "Overview – UC Santa Cruz", 0.013664596273291927},
-				{"https://www.ucsc.edu/about/", "About UC Santa Cruz – UC Santa Cruz", 0.013242375601926164},
-				{"https://www.ucsc.edu/better-together/", "UC + Santa Cruz. Better together – UC Santa Cruz", 0.006122448979591837},
-				{"https://www.ucsc.edu/azindex/", "A–Z index – UC Santa Cruz", 0.0027617373838814963},
+				{"About UC Santa Cruz – UC Santa Cruz", "", "Banana Slugs thrive in the redwoods", "https://www.ucsc.edu/campus/", 0.05463182897862233},
+				{"Campus &amp; Community – UC Santa Cruz", "", "A place for all to thrive", "https://www.ucsc.edu/about/", 0.03230337078651685},
 			},
 		},
 	}
@@ -92,14 +81,14 @@ func TestWildCard(t *testing.T) {
 	crawl(url, true, true)
 
 	for _, tc := range tests {
-		terms := []string{"farm"}
-		got := search(terms, true)
+		terms := []string{"thrive"}
+		got := search(terms, false, false)
 
 		for _, gotHit := range got {
 			for _, wantHit := range tc.want {
-				if gotHit.url == wantHit.url {
-					if !reflect.DeepEqual(gotHit.title, wantHit.title) {
-						t.Errorf("Want title: %v\nGot title: %v\n", wantHit.title, gotHit.title)
+				if gotHit.Url == wantHit.Url {
+					if !reflect.DeepEqual(gotHit.Sentence, wantHit.Sentence) {
+						t.Errorf("Want title: %v\nGot title: %v\n", wantHit.Sentence, gotHit.Sentence)
 					}
 				}
 			}

@@ -1,11 +1,35 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strings"
-	"time"
+	"text/template"
 )
+
+func handleIndex(w http.ResponseWriter, r *http.Request, hits []Hits, imageUrl bool) {
+	var t *template.Template
+	var err error
+
+	if len(hits) > 0 {
+		t, err = template.ParseFiles("result.html")
+	} else if len(hits) == 0 {
+		t, err = template.ParseFiles("no_result.html")
+	}
+
+	if imageUrl {
+		t, err = template.ParseFiles("image_result.html")
+	}
+
+	if err != nil {
+		log.Fatalln("ParseFiles: ", err)
+	}
+
+	err = t.Execute(w, hits)
+	if err != nil {
+		log.Fatalln("Execute: ", err)
+	}
+}
 
 func serve_web() {
 	// Serve webpage with search form
@@ -16,39 +40,29 @@ func serve_web() {
 		// Get Search term and wildcard
 		term := r.FormValue("term")
 		wildcard := r.FormValue("wildcard")
+		image := r.FormValue("image")
+		var imageUrl bool
 
 		sliceTerms := strings.Split(term, " ")
 
-		start := time.Now()
 		// Initilaize slice of search results
 		var hits []Hits
 
 		// Check if the wildcard parameter is provided for the search.
 		if len(wildcard) > 0 {
 			// Perform a tf-idf search with wildcard functionality
-			hits = search(sliceTerms, true)
+			hits = search(sliceTerms, true, false)
 		} else {
-			// Perform a tf-idf search without wildcard functionality
-			hits = search(sliceTerms, false)
+			if len(image) > 0 {
+				imageUrl = true
+				hits = search_image(term)
+			} else {
+				// Perform a tf-idf search without wildcard functionality
+				hits = search(sliceTerms, false, false)
+			}
 		}
 
-		fmt.Fprintf(w, `<html>`)
-
-		finish := time.Since(start).Seconds()
-		// Print number of search results
-		fmt.Fprintf(w, `<p> Legion | Searching for %v </p><br>`, term)
-		if len(hits) != 0 {
-			fmt.Fprintf(w, `<p> About %v results (%v seconds)</p>`, len(hits), finish)
-		} else {
-			fmt.Fprintf(w, `<p> No results found for search term....%v</p>`, term)
-		}
-
-		// Loop over map printing title with embedded href
-		for _, hit := range hits {
-			fmt.Fprintf(w, `<a href = %v> %v </a><br>`, hit.url, hit.title)
-		}
-
-		fmt.Fprintf(w, `</html>`)
+		handleIndex(w, r, hits, imageUrl)
 
 	})
 	// Start web server on port 8080

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legion</title>
+    <link rel="stylesheet" href="result.css">
+</head>
+<body>
+
+<form id="searchForm" method="get" action="/search">
+    <input type="text" name="term" id="inputBox">
+    <button type="submit">Impetus</button>
+    <div id="myCheckboxContainer" class="checkbox-container">
+      <input type="checkbox" id="wildcard" name="wildcard" value="wildcard">
+      <label for="wildcard">Wildcard Search</label>
+      <input type="checkbox" id="image" name="image" value="image">
+      <label for="image">Image Search</label>
+  </div>
+</form>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h3 class="animate-charcter">LEGION</h3>
+        </div>
+    </div>
+</div>
+
+<div class="result-box">
+  <div class="result-title">
+    <p>Uh Oh... No Search Results for that term</p>
+  </div>
+</div>
+    
+</body>
+</html>
