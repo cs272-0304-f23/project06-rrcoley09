@@ -42,15 +42,19 @@ func createTables(pastDB bool) *sql.DB {
 			word_count INTEGER
 		);`)
 		if err != nil {
-			fmt.Printf("Error creating terms table: %v\n", err)
+			fmt.Printf("Error creating urls table: %v\n", err)
 		}
+		// Create "snippets" table
 		_, err = db.Exec(`DROP TABLE IF EXISTS snippets;
 		CREATE TABLE snippets (
 			snippet_id INTEGER PRIMARY KEY,
 			sentence TEXT UNIQUE
 		);`)
+		if err != nil {
+			fmt.Printf("Error creating snippets table: %v\n", err)
+		}
 
-		// Create the "hits" table with foreign key constraints
+		// Create the "hits" table
 		_, err = db.Exec(`DROP TABLE IF EXISTS hits;
 		CREATE TABLE hits (
 			hit_id INTEGER PRIMARY KEY,
@@ -94,6 +98,7 @@ func createTables(pastDB bool) *sql.DB {
 			fmt.Printf("Error creating caption_terms table: %v\n", err)
 		}
 
+		// Create the "hits_images" table
 		_, err = db.Exec(`DROP TABLE IF EXISTS hits_images;
 		CREATE TABLE hits_images (
 			image_id INTEGER PRIMARY KEY,
@@ -104,7 +109,9 @@ func createTables(pastDB bool) *sql.DB {
 			FOREIGN KEY (term_id) REFERENCES caption_terms(term_id),
 			FOREIGN KEY (url_id) REFERENCES urls(url_id)
 		);`)
-
+		if err != nil {
+			fmt.Printf("Error creating hits_images table: %v\n", err)
+		}
 	}
 	return db
 }
